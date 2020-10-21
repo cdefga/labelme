@@ -9,11 +9,12 @@ RUN apt-get update -qq && \
     python3-pip \
     python3-matplotlib \
     python3-pyqt5 \
+    openjdk-11-jdk \
     && rm -rf /var/lib/apt/lists/*
 
 RUN python3 -m pip install -U pip setuptools wheel
 
-RUN python3 -m pip install -v git+https://github.com/wkentaro/labelme.git
+RUN python3 -m pip install -v git+https://github.com/cdefga/labelme
 
 RUN mkdir /root/workdir
 

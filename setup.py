@@ -29,13 +29,14 @@ def get_install_requires():
     assert PY3 or PY2
 
     install_requires = [
-        "imgviz>=0.11.0",
+        "imgviz==1.2.2",
         "matplotlib<3.3",  # for PyInstaller
         "numpy",
-        "Pillow>=2.8.0",
+        "Pillow==5.3.0",
         "PyYAML",
-        "qtpy",
-        "termcolor",
+        "qtpy==1.9.0",
+        "termcolor==1.1.0",
+        "pyqt5=5.15.1"
     ]
 
     # Find python binding for qt with priority:
