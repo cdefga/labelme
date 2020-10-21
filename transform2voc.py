@@ -93,7 +93,7 @@ def main():
 
         if len(img.shape) == 2:
             gray = img
-        elif:
+        else
             gray = imgviz.rgb2gray(img)
 
         if not args.noviz:
