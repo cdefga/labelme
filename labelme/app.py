@@ -586,8 +586,8 @@ class MainWindow(QtWidgets.QMainWindow):
             fitWidth=fitWidth,
             brightnessContrast=brightnessContrast,
             zoomActions=zoomActions,
-            openNextImg=openNextImg,
             openPrevImg=openPrevImg,
+            openNextImg=openNextImg,
             fileMenuActions=(open_, opendir, save, saveAs, close, quit),
             tool=(),
             # XXX: need to add some actions here to activate the shortcut
@@ -707,8 +707,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actions.tool = (
             open_,
             opendir,
-            openNextImg,
             openPrevImg,
+            openNextImg,
             save,
             deleteFile,
             None,
