@@ -3,6 +3,7 @@ import contextlib
 import io
 import json
 import os.path as osp
+import subprocess
 
 import PIL.Image
 
@@ -33,7 +34,6 @@ class LabelFileError(Exception):
 
 
 class LabelFile(object):
-
     suffix = ".json"
 
     def __init__(self, filename=None):
@@ -46,6 +46,16 @@ class LabelFile(object):
 
     @staticmethod
     def load_image_file(filename):
+        
+        if osp.splitext(filename)[1] == ".dcm":
+            if osp.exists(filename.replace(".dcm", ".jpg")):
+                # print('existed')
+                filename = filename.replace(".dcm", ".jpg")
+            else:
+                # print('read dcm files: ', filename)
+                subprocess.call(["./script.sh", filename])
+                filename = filename.replace(".dcm", ".jpg")
+ 
         try:
             image_pil = PIL.Image.open(filename)
         except IOError:
