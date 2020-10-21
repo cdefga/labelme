@@ -1,11 +1,9 @@
 FROM ubuntu:bionic
-LABEL maintainer "Kentaro Wada <www.kentaro.wada@gmail.com>"
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN \
-  apt-get update -qq && \
-  apt-get install -qq -y \
+RUN apt-get update -qq && \
+    apt-get install -qq -y \
     git \
     python3 \
     python3-pip \
