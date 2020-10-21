@@ -91,10 +91,10 @@ def main():
         labelme.utils.lblsave(out_png_file, lbl)
         np.save(out_lbl_file, lbl)
 
-        if len(img.shape) == 3:
-            gray = imgviz.rgb2gray(img)
-        else:
+        if len(img.shape) == 2:
             gray = img
+        elif:
+            gray = imgviz.rgb2gray(img)
 
         if not args.noviz:
             viz = imgviz.label2rgb(
