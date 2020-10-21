@@ -1469,6 +1469,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 "*.{}".format(fmt.data().decode())
                 for fmt in QtGui.QImageReader.supportedImageFormats()
             ]
+            formats.append("*.dcm")
             self.errorMessage(
                 self.tr("Error opening file"),
                 self.tr(
@@ -1598,6 +1599,7 @@ class MainWindow(QtWidgets.QMainWindow):
             ".%s" % fmt.data().decode().lower()
             for fmt in QtGui.QImageReader.supportedImageFormats()
         ]
+        extensions.append(".dcm")
         if event.mimeData().hasUrls():
             items = [i.toLocalFile() for i in event.mimeData().urls()]
             if any([i.lower().endswith(tuple(extensions)) for i in items]):
@@ -1675,6 +1677,7 @@ class MainWindow(QtWidgets.QMainWindow):
             "*.{}".format(fmt.data().decode())
             for fmt in QtGui.QImageReader.supportedImageFormats()
         ]
+        formats.append("*.dcm") 
         filters = self.tr("Image & Label files (%s)") % " ".join(
             formats + ["*%s" % LabelFile.suffix]
         )
@@ -1930,6 +1933,7 @@ class MainWindow(QtWidgets.QMainWindow):
             ".%s" % fmt.data().decode().lower()
             for fmt in QtGui.QImageReader.supportedImageFormats()
         ]
+        extensions.append(".dcm")
 
         self.filename = None
         for file in imageFiles:
@@ -1968,6 +1972,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.filename = None
         self.fileListWidget.clear()
         for filename in self.scanAllImages(dirpath):
+            if osp.splitext(filename)[1] == ".jpg" and osp.exists(filename.replace(".jpg", ".dcm")):
+                continue
             if pattern and pattern not in filename:
                 continue
             label_file = osp.splitext(filename)[0] + ".json"
@@ -1990,6 +1996,7 @@ class MainWindow(QtWidgets.QMainWindow):
             ".%s" % fmt.data().decode().lower()
             for fmt in QtGui.QImageReader.supportedImageFormats()
         ]
+        extensions.append(".dcm")
 
         images = []
         for root, dirs, files in os.walk(folderPath):
