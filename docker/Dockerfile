@@ -14,6 +14,8 @@ RUN apt-get update -qq && \
 
 RUN python3 -m pip install -U pip setuptools wheel
 
+RUN chmod u+rx script.sh
+
 RUN python3 -m pip install -v git+https://github.com/cdefga/labelme
 
 RUN mkdir /root/workdir

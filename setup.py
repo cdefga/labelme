@@ -91,7 +91,7 @@ def get_long_description():
         import github2pypi
 
         return github2pypi.replace_url(
-            slug="wkentaro/labelme", content=long_description
+            slug="cdefga/labelme", content=long_description
         )
     except Exception:
         return long_description
@@ -126,9 +126,9 @@ def main():
         description="Image Polygonal Annotation with Python",
         long_description=get_long_description(),
         long_description_content_type="text/markdown",
-        author="Kentaro Wada",
-        author_email="www.kentaro.wada@gmail.com",
-        url="https://github.com/wkentaro/labelme",
+        author="cdefga",
+        author_email="wingfly5555@gmail.com",
+        url="https://github.com/cdefga/labelme",
         install_requires=get_install_requires(),
         license="GPLv3",
         keywords="Image Annotation, Machine Learning",
