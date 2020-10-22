@@ -790,11 +790,13 @@ class MainWindow(QtWidgets.QMainWindow):
         # if self.firstStart:
         #    QWhatsThis.enterWhatsThisMode()
 
+
     def menu(self, title, actions=None):
         menu = self.menuBar().addMenu(title)
         if actions:
             utils.addActions(menu, actions)
         return menu
+
 
     def toolbar(self, title, actions=None):
         toolbar = ToolBar(title)
@@ -806,10 +808,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addToolBar(Qt.LeftToolBarArea, toolbar)
         return toolbar
 
+
     # Support Functions
+
 
     def noShapes(self):
         return not len(self.labelList)
+
 
     def populateModeActions(self):
         tool, menu = self.actions.tool, self.actions.menu
@@ -829,6 +834,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         utils.addActions(self.menus.edit, actions + self.actions.editMenu)
 
+
     def setDirty(self):
         if self._config["auto_save"] or self.actions.saveAuto.isChecked():
             label_file = osp.splitext(self.imagePath)[0] + ".json"
@@ -844,6 +850,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.filename is not None:
             title = "{} - {}*".format(title, self.filename)
         self.setWindowTitle(title)
+
 
     def setClean(self):
         self.dirty = False
@@ -864,6 +871,7 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.actions.deleteFile.setEnabled(False)
 
+
     def toggleActions(self, value=True):
         """Enable/Disable widgets which depend on an opened image."""
         for z in self.actions.zoomActions:
@@ -871,16 +879,20 @@ class MainWindow(QtWidgets.QMainWindow):
         for action in self.actions.onLoadActive:
             action.setEnabled(value)
 
+
     def canvasShapeEdgeSelected(self, selected, shape):
         self.actions.addPointToEdge.setEnabled(
             selected and shape and shape.canAddPoint()
         )
 
+
     def queueEvent(self, function):
         QtCore.QTimer.singleShot(0, function)
 
+
     def status(self, message, delay=5000):
         self.statusBar().showMessage(message, delay)
+
 
     def resetState(self):
         self.labelList.clear()
@@ -891,11 +903,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.otherData = None
         self.canvas.resetState()
 
+
     def currentItem(self):
         items = self.labelList.selectedItems()
         if items:
             return items[0]
         return None
+
 
     def addRecentFile(self, filename):
         if filename in self.recentFiles:
@@ -904,7 +918,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.recentFiles.pop()
         self.recentFiles.insert(0, filename)
 
+
     # Callbacks
+
 
     def undoShapeEdit(self):
         self.canvas.restoreShape()
@@ -912,9 +928,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.loadShapes(self.canvas.shapes)
         self.actions.undo.setEnabled(self.canvas.isShapeRestorable)
 
+
     def tutorial(self):
         url = "https://github.com/cdefga/labelme/tree/master/examples/tutorial"  # NOQA
         webbrowser.open(url)
+
 
     def toggleDrawingSensitive(self, drawing=True):
         """Toggle drawing sensitive.
@@ -925,6 +943,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actions.undoLastPoint.setEnabled(drawing)
         self.actions.undo.setEnabled(not drawing)
         self.actions.delete.setEnabled(not drawing)
+
 
     def toggleDrawMode(self, edit=True, createMode="polygon"):
         self.canvas.setEditing(edit)
@@ -983,8 +1002,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 raise ValueError("Unsupported createMode: %s" % createMode)
         self.actions.editMode.setEnabled(not edit)
 
+
     def setEditMode(self):
         self.toggleDrawMode(True)
+
 
     def updateFileMenu(self):
         current = self.filename
@@ -1003,8 +1024,10 @@ class MainWindow(QtWidgets.QMainWindow):
             action.triggered.connect(functools.partial(self.loadRecent, f))
             menu.addAction(action)
 
+
     def popLabelListMenu(self, point):
         self.menus.labelList.exec_(self.labelList.mapToGlobal(point))
+
 
     def validateLabel(self, label):
         # no validation
@@ -1017,6 +1040,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 if label_i == label:
                     return True
         return False
+
 
     def editLabel(self, item=None):
         if item and not isinstance(item, LabelListWidgetItem):
@@ -1059,12 +1083,14 @@ class MainWindow(QtWidgets.QMainWindow):
             item.setData(Qt.UserRole, shape.label)
             self.uniqLabelList.addItem(item)
 
+
     def fileSearchChanged(self):
         self.importDirImages(
             self.lastOpenDir,
             pattern=self.fileSearch.text(),
             load=False,
         )
+
 
     def fileSelectionChanged(self):
         items = self.fileListWidget.selectedItems()
@@ -1080,6 +1106,7 @@ class MainWindow(QtWidgets.QMainWindow):
             filename = self.imageList[currIndex]
             if filename:
                 self.loadFile(filename)
+
 
     # React to canvas signals.
     def shapeSelectionChanged(self, selected_shapes):
@@ -1098,6 +1125,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actions.delete.setEnabled(n_selected)
         self.actions.copy.setEnabled(n_selected)
         self.actions.edit.setEnabled(n_selected == 1)
+
 
     def addLabel(self, shape):
         if shape.group_id is None:
@@ -1130,6 +1158,7 @@ class MainWindow(QtWidgets.QMainWindow):
         shape.select_line_color = QtGui.QColor(255, 255, 255)
         shape.select_fill_color = QtGui.QColor(r, g, b, 155)
 
+
     def _get_rgb_by_label(self, label):
         if self._config["shape_color"] == "auto":
             item = self.uniqLabelList.findItemsByLabel(label)[0]
@@ -1145,10 +1174,12 @@ class MainWindow(QtWidgets.QMainWindow):
         elif self._config["default_shape_color"]:
             return self._config["default_shape_color"]
 
+
     def remLabels(self, shapes):
         for shape in shapes:
             item = self.labelList.findItemByShape(shape)
             self.labelList.removeItem(item)
+
 
     def loadShapes(self, shapes, replace=True):
         self._noSelectionSlot = True
@@ -1157,6 +1188,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.labelList.clearSelection()
         self._noSelectionSlot = False
         self.canvas.loadShapes(shapes, replace=replace)
+
 
     def loadLabels(self, shapes):
         s = []
@@ -1190,6 +1222,7 @@ class MainWindow(QtWidgets.QMainWindow):
             s.append(shape)
         self.loadShapes(s)
 
+
     def loadFlags(self, flags):
         self.flag_widget.clear()
         for key, flag in flags.items():
@@ -1197,6 +1230,7 @@ class MainWindow(QtWidgets.QMainWindow):
             item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
             item.setCheckState(Qt.Checked if flag else Qt.Unchecked)
             self.flag_widget.addItem(item)
+
 
     def saveLabels(self, filename):
         lf = LabelFile()
@@ -1213,6 +1247,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 )
             )
             return data
+
 
         shapes = [format_shape(item.shape()) for item in self.labelList]
         flags = {}
@@ -1253,12 +1288,14 @@ class MainWindow(QtWidgets.QMainWindow):
             )
             return False
 
+
     def copySelectedShape(self):
         added_shapes = self.canvas.copySelectedShapes()
         self.labelList.clearSelection()
         for shape in added_shapes:
             self.addLabel(shape)
         self.setDirty()
+
 
     def labelSelectionChanged(self):
         if self._noSelectionSlot:
@@ -1272,16 +1309,18 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 self.canvas.deSelectShape()
 
+
     def labelItemChanged(self, item):
         shape = item.shape()
         self.canvas.setShapeVisible(shape, item.checkState() == Qt.Checked)
+
 
     def labelOrderChanged(self):
         self.setDirty()
         self.canvas.loadShapes([item.shape() for item in self.labelList])
 
-    # Callback functions:
 
+    # Callback functions:
     def newShape(self):
         """Pop-up and give focus to the label editor.
 
@@ -1320,15 +1359,18 @@ class MainWindow(QtWidgets.QMainWindow):
             self.canvas.undoLastLine()
             self.canvas.shapesBackups.pop()
 
+
     def scrollRequest(self, delta, orientation):
         units = -delta * 0.1  # natural scroll
         bar = self.scrollBars[orientation]
         value = bar.value() + bar.singleStep() * units
         self.setScroll(orientation, value)
 
+
     def setScroll(self, orientation, value):
         self.scrollBars[orientation].setValue(value)
         self.scroll_values[orientation][self.filename] = value
+
 
     def setZoom(self, value):
         self.actions.fitWidth.setChecked(False)
@@ -1337,6 +1379,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.zoomWidget.setValue(value)
         self.zoom_values[self.filename] = (self.zoomMode, value)
 
+
     def addZoom(self, increment=1.1):
         zoom_value = self.zoomWidget.value() * increment
         if increment > 1:
@@ -1344,6 +1387,7 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             zoom_value = math.floor(zoom_value)
         self.setZoom(zoom_value)
+
 
     def zoomRequest(self, delta, pos):
         canvas_width_old = self.canvas.width()
@@ -1368,11 +1412,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.scrollBars[Qt.Vertical].value() + y_shift,
             )
 
+
     def setFitWindow(self, value=True):
         if value:
             self.actions.fitWidth.setChecked(False)
         self.zoomMode = self.FIT_WINDOW if value else self.MANUAL_ZOOM
         self.adjustScale()
+
 
     def setFitWidth(self, value=True):
         if value:
@@ -1380,10 +1426,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.zoomMode = self.FIT_WIDTH if value else self.MANUAL_ZOOM
         self.adjustScale()
 
+
     def onNewBrightnessContrast(self, qimage):
         self.canvas.loadPixmap(
             QtGui.QPixmap.fromImage(qimage), clear_shapes=False
         )
+
 
     def brightnessContrast(self, value):
         dialog = BrightnessContrastDialog(
@@ -1404,9 +1452,11 @@ class MainWindow(QtWidgets.QMainWindow):
         contrast = dialog.slider_contrast.value()
         self.brightnessContrast_values[self.filename] = (brightness, contrast)
 
+
     def togglePolygons(self, value):
         for item in self.labelList:
             item.setCheckState(Qt.Checked if value else Qt.Unchecked)
+
 
     def loadFile(self, filename=None):
         """Load the specified file, or the last opened file if None."""
@@ -1539,6 +1589,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.status(self.tr("Loaded %s") % osp.basename(str(filename)))
         return True
 
+
     def resizeEvent(self, event):
         if (
             self.canvas
@@ -1548,17 +1599,20 @@ class MainWindow(QtWidgets.QMainWindow):
             self.adjustScale()
         super(MainWindow, self).resizeEvent(event)
 
+
     def paintCanvas(self):
         assert not self.image.isNull(), "cannot paint null image"
         self.canvas.scale = 0.01 * self.zoomWidget.value()
         self.canvas.adjustSize()
         self.canvas.update()
 
+
     def adjustScale(self, initial=False):
         value = self.scalers[self.FIT_WINDOW if initial else self.zoomMode]()
         value = int(100 * value)
         self.zoomWidget.setValue(value)
         self.zoom_values[self.filename] = (self.zoomMode, value)
+
 
     def scaleFitWindow(self):
         """Figure out the size of the pixmap to fit the main widget."""
@@ -1572,14 +1626,17 @@ class MainWindow(QtWidgets.QMainWindow):
         a2 = w2 / h2
         return w1 / w2 if a2 >= a1 else h1 / h2
 
+
     def scaleFitWidth(self):
         # The epsilon does not seem to work too well here.
         w = self.centralWidget().width() - 2.0
         return w / self.canvas.pixmap.width()
 
+
     def enableSaveImageWithData(self, enabled):
         self._config["store_data"] = enabled
         self.actions.saveWithImageData.setChecked(enabled)
+
 
     def closeEvent(self, event):
         if not self.mayContinue():
@@ -1594,6 +1651,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # ask the use for where to save the labels
         # self.settings.setValue('window/geometry', self.saveGeometry())
 
+
     def dragEnterEvent(self, event):
         extensions = [
             ".%s" % fmt.data().decode().lower()
@@ -1607,6 +1665,7 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             event.ignore()
 
+
     def dropEvent(self, event):
         if not self.mayContinue():
             event.ignore()
@@ -1614,11 +1673,12 @@ class MainWindow(QtWidgets.QMainWindow):
         items = [i.toLocalFile() for i in event.mimeData().urls()]
         self.importDroppedImageFiles(items)
 
-    # User Dialogs #
 
+    # User Dialogs #
     def loadRecent(self, filename):
         if self.mayContinue():
             self.loadFile(filename)
+
 
     def openPrevImg(self, _value=False):
         keep_prev = self._config["keep_prev"]
@@ -1641,6 +1701,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.loadFile(filename)
 
         self._config["keep_prev"] = keep_prev
+
 
     def openNextImg(self, _value=False, load=True):
         keep_prev = self._config["keep_prev"]
@@ -1669,6 +1730,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self._config["keep_prev"] = keep_prev
 
+
     def openFile(self, _value=False):
         if not self.mayContinue():
             return
@@ -1692,6 +1754,7 @@ class MainWindow(QtWidgets.QMainWindow):
         filename = str(filename)
         if filename:
             self.loadFile(filename)
+
 
     def changeOutputDirDialog(self, _value=False):
         default_output_dir = self.output_dir
@@ -1730,6 +1793,7 @@ class MainWindow(QtWidgets.QMainWindow):
             )
             self.fileListWidget.repaint()
 
+
     def saveFile(self, _value=False):
         assert not self.image.isNull(), "cannot save empty image"
         if self.labelFile:
@@ -1741,9 +1805,11 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self._saveFile(self.saveFileDialog())
 
+
     def saveFileAs(self, _value=False):
         assert not self.image.isNull(), "cannot save empty image"
         self._saveFile(self.saveFileDialog())
+
 
     def saveFileDialog(self):
         caption = self.tr("%s - Choose File") % __appname__
@@ -1779,10 +1845,12 @@ class MainWindow(QtWidgets.QMainWindow):
             filename, _ = filename
         return filename
 
+
     def _saveFile(self, filename):
         if filename and self.saveLabels(filename):
             self.addRecentFile(filename)
             self.setClean()
+
 
     def closeFile(self, _value=False):
         if not self.mayContinue():
@@ -1793,6 +1861,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.canvas.setEnabled(False)
         self.actions.saveAs.setEnabled(False)
 
+
     def getLabelFile(self):
         if self.filename.lower().endswith(".json"):
             label_file = self.filename
@@ -1800,6 +1869,7 @@ class MainWindow(QtWidgets.QMainWindow):
             label_file = osp.splitext(self.filename)[0] + ".json"
 
         return label_file
+
 
     def deleteFile(self):
         mb = QtWidgets.QMessageBox
@@ -1821,6 +1891,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
             self.resetState()
 
+
     # Message Dialogs. #
     def hasLabels(self):
         if self.noShapes():
@@ -1831,12 +1902,14 @@ class MainWindow(QtWidgets.QMainWindow):
             return False
         return True
 
+
     def hasLabelFile(self):
         if self.filename is None:
             return False
 
         label_file = self.getLabelFile()
         return osp.exists(label_file)
+
 
     def mayContinue(self):
         if not self.dirty:
@@ -1860,16 +1933,20 @@ class MainWindow(QtWidgets.QMainWindow):
         else:  # answer == mb.Cancel
             return False
 
+
     def errorMessage(self, title, message):
         return QtWidgets.QMessageBox.critical(
             self, title, "<p><b>%s</b></p>%s" % (title, message)
         )
 
+
     def currentPath(self):
         return osp.dirname(str(self.filename)) if self.filename else "."
 
+
     def toggleKeepPrevMode(self):
         self._config["keep_prev"] = not self._config["keep_prev"]
+
 
     def deleteSelectedShape(self):
         yes, no = QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No
@@ -1886,6 +1963,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 for action in self.actions.onShapesPresent:
                     action.setEnabled(False)
 
+
     def copyShape(self):
         self.canvas.endMove(copy=True)
         self.labelList.clearSelection()
@@ -1893,9 +1971,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.addLabel(shape)
         self.setDirty()
 
+
     def moveShape(self):
         self.canvas.endMove(copy=False)
         self.setDirty()
+
 
     def openDirDialog(self, _value=False, dirpath=None):
         if not self.mayContinue():
@@ -1920,6 +2000,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.importDirImages(targetDirPath)
 
+
     @property
     def imageList(self):
         lst = []
@@ -1927,6 +2008,7 @@ class MainWindow(QtWidgets.QMainWindow):
             item = self.fileListWidget.item(i)
             lst.append(item.text())
         return lst
+
 
     def importDroppedImageFiles(self, imageFiles):
         extensions = [
@@ -1961,6 +2043,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.openNextImg()
 
+
     def importDirImages(self, dirpath, pattern=None, load=True):
         self.actions.openNextImg.setEnabled(True)
         self.actions.openPrevImg.setEnabled(True)
@@ -1991,6 +2074,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.fileListWidget.addItem(item)
         self.openNextImg(load=load)
 
+
     def scanAllImages(self, folderPath):
         extensions = [
             ".%s" % fmt.data().decode().lower()
@@ -2005,4 +2089,5 @@ class MainWindow(QtWidgets.QMainWindow):
                     relativePath = osp.join(root, file)
                     images.append(relativePath)
         images.sort(key=lambda x: x.lower())
+        print(images)
         return images
