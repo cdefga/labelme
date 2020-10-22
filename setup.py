@@ -32,11 +32,12 @@ def get_install_requires():
         "imgviz==1.2.2",
         "matplotlib<3.3",  # for PyInstaller
         "numpy",
-        "Pillow==5.3.0",
+        # "Pillow==5.3.0",
+        "Pillow",
         "PyYAML",
         "qtpy==1.9.0",
         "termcolor==1.1.0",
-        "pyqt5=5.15.1"
+        "pyqt5==5.15.1"
     ]
 
     # Find python binding for qt with priority:
