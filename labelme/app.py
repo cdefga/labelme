@@ -6,6 +6,9 @@ import os
 import os.path as osp
 import re
 import webbrowser
+import multiprocessing
+import subprocess
+import time
 
 import imgviz
 from qtpy import QtCore
@@ -2054,9 +2057,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.lastOpenDir = dirpath
         self.filename = None
         self.fileListWidget.clear()
-        for filename in self.scanAllImages(dirpath):
-            if osp.splitext(filename)[1] == ".jpg" and osp.exists(filename.replace(".jpg", ".dcm")):
-                continue
+        scanned_images = self.scanAllImages(dirpath)
+        preload_process = multiprocessing.Process(target=preload_dicom_images, args=(scanned_images,))
+        preload_process.start()
+        for filename in scanned_images:
             if pattern and pattern not in filename:
                 continue
             label_file = osp.splitext(filename)[0] + ".json"
@@ -2072,6 +2076,7 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 item.setCheckState(Qt.Unchecked)
             self.fileListWidget.addItem(item)
+        time.sleep(1)
         self.openNextImg(load=load)
 
 
@@ -2091,3 +2096,16 @@ class MainWindow(QtWidgets.QMainWindow):
         images.sort(key=lambda x: x.lower())
         print(images)
         return images
+
+
+def preload_dicom_images(images):
+        for image in images[1:]:
+            if osp.splitext(image)[1] == ".jpg":
+                print('existed')
+                continue
+            elif osp.splitext(image)[1] == ".dcm":
+                if osp.exists(image.replace(".dcm", ".jpg")):
+                    print('existed')
+                    continue
+                else:
+                    subprocess.call(["./script.sh", image])
