@@ -162,7 +162,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.file_dock = QtWidgets.QDockWidget(self.tr(u"File List"), self)
         self.file_dock.setObjectName(u"Files")
         fileListWidget = QtWidgets.QWidget()
-        fileListWidget.setLayout(fileListLayout)
+        fileListWidget  .setLayout(fileListLayout)
         self.file_dock.setWidget(fileListWidget)
 
         self.zoomWidget = ZoomWidget()
@@ -2001,6 +2001,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 | QtWidgets.QFileDialog.DontResolveSymlinks,
             )
         )
+        preload_process = multiprocessing.Process(target=preload_dicom_images, args=(self.scanAllImages(targetDirPath),))
+        preload_process.start()
+        time.sleep(.5)
         self.importDirImages(targetDirPath)
 
 
@@ -2057,10 +2060,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.lastOpenDir = dirpath
         self.filename = None
         self.fileListWidget.clear()
-        scanned_images = self.scanAllImages(dirpath)
-        preload_process = multiprocessing.Process(target=preload_dicom_images, args=(scanned_images,))
-        preload_process.start()
-        for filename in scanned_images:
+        for filename in self.scanAllImages(dirpath):
+            if osp.splitext(filename)[1] == ".jpg" and osp.exists(filename.replace(".jpg", ".dcm")):
+                continue
             if pattern and pattern not in filename:
                 continue
             label_file = osp.splitext(filename)[0] + ".json"
@@ -2076,7 +2078,6 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 item.setCheckState(Qt.Unchecked)
             self.fileListWidget.addItem(item)
-        time.sleep(1)
         self.openNextImg(load=load)
 
 
@@ -2094,18 +2095,15 @@ class MainWindow(QtWidgets.QMainWindow):
                     relativePath = osp.join(root, file)
                     images.append(relativePath)
         images.sort(key=lambda x: x.lower())
-        print(images)
         return images
 
 
 def preload_dicom_images(images):
         for image in images[1:]:
             if osp.splitext(image)[1] == ".jpg":
-                print('existed')
                 continue
             elif osp.splitext(image)[1] == ".dcm":
                 if osp.exists(image.replace(".dcm", ".jpg")):
-                    print('existed')
                     continue
                 else:
                     subprocess.call(["./script.sh", image])
