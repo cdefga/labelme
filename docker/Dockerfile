@@ -1,6 +1,6 @@
 FROM ubuntu:bionic
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update -qq && \
+RUN DEBIAN_FRONTEND="noninteractive" apt-get update -qq && \
     apt-get install -qq -y \
     git \
     python3 \
