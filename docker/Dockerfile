@@ -1,8 +1,6 @@
 FROM ubuntu:bionic
 
-ENV DEBIAN_FRONTEND=noninteractive
-
-RUN apt-get update -qq && \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update -qq && \
     apt-get install -qq -y \
     git \
     python3 \
@@ -14,13 +12,14 @@ RUN apt-get update -qq && \
 
 RUN python3 -m pip install -U pip setuptools wheel
 
+RUN mkdir labelme
+WORKDIR /root/labelme
+COPY . .
 RUN chmod u+rx script.sh
-
-RUN python3 -m pip install -v git+https://github.com/cdefga/labelme
+RUN python3 -m pip install .
 
 RUN mkdir /root/workdir
-
 ENV LANG en-US
-
 WORKDIR /root/workdir
-ENTRYPOINT [ "labelme" ]
+
+ENTRYPOINT ["python3", "-m", "labelme"]
