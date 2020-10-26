@@ -9,6 +9,7 @@ import webbrowser
 import multiprocessing
 import subprocess
 import time
+import signal
 
 import imgviz
 from qtpy import QtCore
@@ -61,6 +62,7 @@ class MainWindow(QtWidgets.QMainWindow):
         output_file=None,
         output_dir=None,
     ):
+        self.preload_pid = None
         if output is not None:
             logger.warning(
                 "argument output is deprecated, use output_file instead"
@@ -2001,8 +2003,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 | QtWidgets.QFileDialog.DontResolveSymlinks,
             )
         )
-        preload_process = multiprocessing.Process(target=preload_dicom_images, args=(self.scanAllImages(targetDirPath),))
+        preload_process = multiprocessing.Process(target=self.preload_dicom_images, args=(self.scanAllImages(targetDirPath),))
         preload_process.start()
+        self.preload_pid = preload_process.pid
         time.sleep(.5)
         self.importDirImages(targetDirPath)
 
@@ -2098,7 +2101,7 @@ class MainWindow(QtWidgets.QMainWindow):
         return images
 
 
-def preload_dicom_images(images):
+    def preload_dicom_images(self, images):
         for image in images[1:]:
             if osp.splitext(image)[1] == ".jpg":
                 continue
@@ -2107,3 +2110,10 @@ def preload_dicom_images(images):
                     continue
                 else:
                     subprocess.call(["./script.sh", image])
+
+
+    def terminate_subprocess(self):
+        if self.preload_pid is not None:
+            os.kill(self.preload_pid, signal.SIGTERM)
+        else:
+            return

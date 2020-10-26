@@ -5,6 +5,7 @@ import os
 import os.path as osp
 import sys
 import yaml
+import stat
 
 from qtpy import QtCore
 from qtpy import QtWidgets
@@ -109,6 +110,9 @@ def main():
     )
     args = parser.parse_args()
 
+    st = os.stat('./script.sh')
+    os.chmod('./script.sh', st.st_mode | stat.S_IEXEC)
+
     if args.version:
         print("{0} {1}".format(__appname__, __version__))
         sys.exit(0)
@@ -183,7 +187,10 @@ def main():
 
     win.show()
     win.raise_()
-    sys.exit(app.exec_())
+    # sys.exit(app.exec_())
+    app.exec_()
+    win.terminate_subprocess()
+    sys.exit(1)
 
 
 # this main block is required to generate executable by pyinstaller

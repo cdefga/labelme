@@ -14,6 +14,9 @@ a = Analysis(
     datas=[
         ('labelme/config/default_config.yaml', 'labelme/config'),
         ('labelme/icons/*', 'labelme/icons'),
+        ('script.sh', 'labelme/'),
+        ('Script.js', 'labelme/'),
+        ('ij.jar', 'labelme/')
     ],
     hiddenimports=[],
     hookspath=[],

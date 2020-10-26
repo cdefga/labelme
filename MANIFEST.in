@@ -1,1 +1,4 @@
 include README.md
+include ij.jar
+include Script.js
+include script.sh

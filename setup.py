@@ -33,7 +33,6 @@ def get_install_requires():
         "matplotlib<3.3",  # for PyInstaller
         "numpy",
         "Pillow>=5.3.0",
-        # "Pillow",
         "PyYAML",
         "qtpy==1.9.0",
         "termcolor==1.1.0",
@@ -121,14 +120,14 @@ def main():
         sys.exit(0)
 
     setup(
-        name="labelme",
+        name="labelvtcc",
         version=version,
         packages=find_packages(exclude=["github2pypi"]),
         description="Image Polygonal Annotation with Python",
         long_description=get_long_description(),
         long_description_content_type="text/markdown",
         author="cdefga",
-        author_email="wingfly5555@gmail.com",
+        author_email="hyouka266@gmail.com",
         url="https://github.com/cdefga/labelme",
         install_requires=get_install_requires(),
         license="GPLv3",
@@ -145,7 +144,10 @@ def main():
             "Programming Language :: Python :: Implementation :: CPython",
             "Programming Language :: Python :: Implementation :: PyPy",
         ],
-        package_data={"labelme": ["icons/*", "config/*.yaml"]},
+        package_data={
+            "labelme": ["icons/*", "config/*.yaml"],
+            "": ["Script.js", "ij.jar", "script.sh"]
+        },
         entry_points={
             "console_scripts": [
                 "labelme=labelme.__main__:main",
@@ -155,7 +157,11 @@ def main():
                 "labelme_on_docker=labelme.cli.on_docker:main",
             ],
         },
-        data_files=[("share/man/man1", ["docs/man/labelme.1"])],
+        data_files=[
+            ("share/man/man1", ["docs/man/labelme.1"]),
+            (".", ["Script.js", "ij.jar", "script.sh"])
+        ],
+        include_package_data=True,
     )
 
 
