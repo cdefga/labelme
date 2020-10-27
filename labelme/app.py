@@ -2003,7 +2003,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 | QtWidgets.QFileDialog.DontResolveSymlinks,
             )
         )
-        preload_process = multiprocessing.Process(target=self.preload_dicom_images, args=(self.scanAllImages(targetDirPath),))
+        preload_process = multiprocessing.Process(target=self.dicom_to_jpeg, args=(self.scanAllImages(targetDirPath),))
         preload_process.start()
         self.preload_pid = preload_process.pid
         time.sleep(.5)
@@ -2101,7 +2101,7 @@ class MainWindow(QtWidgets.QMainWindow):
         return images
 
 
-    def preload_dicom_images(self, images):
+    def dicom_to_jpeg(self, images):
         for image in images[1:]:
             if osp.splitext(image)[1] == ".jpg":
                 continue

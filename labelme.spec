@@ -14,16 +14,15 @@ a = Analysis(
     datas=[
         ('labelme/config/default_config.yaml', 'labelme/config'),
         ('labelme/icons/*', 'labelme/icons'),
-        ('script.sh', 'labelme/'),
-        ('Script.js', 'labelme/'),
-        ('ij.jar', 'labelme/')
     ],
     hiddenimports=[],
     hookspath=[],
     runtime_hooks=[],
     excludes=[],
 )
+
 pyz = PYZ(a.pure, a.zipped_data)
+
 exe = EXE(
     pyz,
     a.scripts,
@@ -38,6 +37,7 @@ exe = EXE(
     console=False,
     icon='labelme/icons/icon.ico',
 )
+
 app = BUNDLE(
     exe,
     name='Labelme.app',

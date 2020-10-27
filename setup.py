@@ -120,7 +120,7 @@ def main():
         sys.exit(0)
 
     setup(
-        name="labelvtcc",
+        name="labelme",
         version=version,
         packages=find_packages(exclude=["github2pypi"]),
         description="Image Polygonal Annotation with Python",
