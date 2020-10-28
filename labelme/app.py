@@ -2003,11 +2003,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 | QtWidgets.QFileDialog.DontResolveSymlinks,
             )
         )
-        preload_process = multiprocessing.Process(target=self.dicom_to_jpeg, args=(self.scanAllImages(targetDirPath),))
-        preload_process.start()
-        self.preload_pid = preload_process.pid
-        time.sleep(.5)
-        self.importDirImages(targetDirPath)
+
+        if targetDirPath:
+            preload_process = multiprocessing.Process(target=self.dicom_to_jpeg, args=(self.scanAllImages(targetDirPath),))
+            preload_process.start()
+            self.preload_pid = preload_process.pid
+            time.sleep(.5)
+            self.importDirImages(targetDirPath)
 
 
     @property
@@ -2109,7 +2111,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 if osp.exists(image.replace(".dcm", ".jpg")):
                     continue
                 else:
-                    subprocess.call(["./script.sh", image])
+                    if os.name == 'posix':
+                        subprocess.call(["./script.sh", image])
+                    elif os.name == 'nt':
+                        subprocess.call(["script.bat", image])
 
 
     def terminate_subprocess(self):

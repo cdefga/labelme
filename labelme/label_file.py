@@ -4,6 +4,7 @@ import io
 import json
 import os.path as osp
 import subprocess
+import os
 
 import PIL.Image
 
@@ -49,11 +50,12 @@ class LabelFile(object):
         
         if osp.splitext(filename)[1] == ".dcm":
             if osp.exists(filename.replace(".dcm", ".jpg")):
-                # print('existed')
                 filename = filename.replace(".dcm", ".jpg")
             else:
-                # print('read dcm files: ', filename)
-                subprocess.call(["./script.sh", filename])
+                if os.name == 'posix':
+                    subprocess.call(["./script.sh", filename])
+                elif os.name == 'nt':
+                    subprocess.call(["script.bat", filename])
                 filename = filename.replace(".dcm", ".jpg")
  
         try:

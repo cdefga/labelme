@@ -110,8 +110,9 @@ def main():
     )
     args = parser.parse_args()
 
-    st = os.stat('./script.sh')
-    os.chmod('./script.sh', st.st_mode | stat.S_IEXEC)
+    if os.name == 'posix':
+        st = os.stat('./script.sh')
+        os.chmod('./script.sh', st.st_mode | stat.S_IEXEC)
 
     if args.version:
         print("{0} {1}".format(__appname__, __version__))

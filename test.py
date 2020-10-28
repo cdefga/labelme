@@ -2,6 +2,7 @@ from labelme.__main__ import main
 import subprocess
 import multiprocessing
 import time
+import os
 
 
 def test_process():
