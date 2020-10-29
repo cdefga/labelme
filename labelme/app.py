@@ -9,7 +9,7 @@ import webbrowser
 import multiprocessing
 import subprocess
 import time
-import signal
+# import signal
 
 import imgviz
 from qtpy import QtCore
@@ -62,7 +62,6 @@ class MainWindow(QtWidgets.QMainWindow):
         output_file=None,
         output_dir=None,
     ):
-        self.preload_pid = None
         if output is not None:
             logger.warning(
                 "argument output is deprecated, use output_file instead"
@@ -2005,12 +2004,13 @@ class MainWindow(QtWidgets.QMainWindow):
         )
 
         if targetDirPath:
-            preload_process = multiprocessing.Process(target=self.dicom_to_jpeg, args=(self.scanAllImages(targetDirPath),))
-            preload_process.start()
-            self.preload_pid = preload_process.pid
-            time.sleep(.5)
+            self.preload_process = multiprocessing.Process(
+                target=dicom_to_jpeg,
+                args=(self.scanAllImages(targetDirPath),)
+            )
+            self.preload_process.start()
+            print(self.preload_process.is_alive())
             self.importDirImages(targetDirPath)
-
 
     @property
     def imageList(self):
@@ -2098,27 +2098,28 @@ class MainWindow(QtWidgets.QMainWindow):
             for file in files:
                 if file.lower().endswith(tuple(extensions)):
                     relativePath = osp.join(root, file)
-                    images.append(relativePath)
+                    images.append(relativePath.replace('\\', '/'))
         images.sort(key=lambda x: x.lower())
         return images
 
 
-    def dicom_to_jpeg(self, images):
-        for image in images[1:]:
-            if osp.splitext(image)[1] == ".jpg":
-                continue
-            elif osp.splitext(image)[1] == ".dcm":
-                if osp.exists(image.replace(".dcm", ".jpg")):
-                    continue
-                else:
-                    if os.name == 'posix':
-                        subprocess.call(["./script.sh", image])
-                    elif os.name == 'nt':
-                        subprocess.call(["script.bat", image])
-
-
     def terminate_subprocess(self):
-        if self.preload_pid is not None:
-            os.kill(self.preload_pid, signal.SIGTERM)
-        else:
-            return
+        if self.preload_process.is_alive():
+            self.preload_process.terminate()
+        #     os.kill(self.preload_pid, signal.SIGTERM)
+
+
+def dicom_to_jpeg(images):
+    print(images)
+    for image in images[1:]:
+        if osp.splitext(image)[1] == ".jpg":
+            continue
+        elif osp.splitext(image)[1] == ".dcm":
+            if osp.exists(image.replace(".dcm", ".jpg")):
+                continue
+            else:
+                if os.name == 'posix':
+                    subprocess.call(["./script.sh", image])
+                elif os.name == 'nt':
+                    print(image)
+                    subprocess.call(["script.bat", image])

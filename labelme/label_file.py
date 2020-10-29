@@ -47,7 +47,6 @@ class LabelFile(object):
 
     @staticmethod
     def load_image_file(filename):
-        
         if osp.splitext(filename)[1] == ".dcm":
             if osp.exists(filename.replace(".dcm", ".jpg")):
                 filename = filename.replace(".dcm", ".jpg")
