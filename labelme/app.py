@@ -92,6 +92,8 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__()
         self.setWindowTitle(__appname__)
 
+        self.preload_process = None
+
         # Whether we need to save or not.
         self.dirty = False
 
@@ -2102,6 +2104,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def terminate_subprocess(self):
+        if self.preload_process is None:
+            return
+            
         if self.preload_process.is_alive():
             self.preload_process.terminate()
         #     os.kill(self.preload_pid, signal.SIGTERM)
