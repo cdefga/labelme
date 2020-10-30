@@ -6,6 +6,7 @@ import os.path as osp
 import sys
 import yaml
 import stat
+import multiprocessing
 
 from qtpy import QtCore
 from qtpy import QtWidgets
@@ -188,7 +189,6 @@ def main():
 
     win.show()
     win.raise_()
-    # sys.exit(app.exec_())
     app.exec_()
     win.terminate_subprocess()
     sys.exit(1)
@@ -196,4 +196,5 @@ def main():
 
 # this main block is required to generate executable by pyinstaller
 if __name__ == "__main__":
+    multiprocessing.freeze_support()
     main()

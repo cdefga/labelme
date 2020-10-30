@@ -23,8 +23,7 @@ from labelme import QT5
 
 from . import utils
 from labelme.config import get_config
-from labelme.label_file import LabelFile
-from labelme.label_file import LabelFileError
+from labelme.label_file import LabelFile, LabelFileError, subprocess_args
 from labelme.logger import logger
 from labelme.shape import Shape
 from labelme.widgets import BrightnessContrastDialog
@@ -2009,7 +2008,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 args=(self.scanAllImages(targetDirPath),)
             )
             self.preload_process.start()
-            print(self.preload_process.is_alive())
             self.importDirImages(targetDirPath)
 
     @property
@@ -2110,7 +2108,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 def dicom_to_jpeg(images):
-    print(images)
     for image in images[1:]:
         if osp.splitext(image)[1] == ".jpg":
             continue
@@ -2121,5 +2118,4 @@ def dicom_to_jpeg(images):
                 if os.name == 'posix':
                     subprocess.call(["./script.sh", image])
                 elif os.name == 'nt':
-                    print(image)
-                    subprocess.call(["script.bat", image])
+                    subprocess.call(["script.bat", image], **subprocess_args())
