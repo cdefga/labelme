@@ -9,7 +9,7 @@ import webbrowser
 import multiprocessing
 import subprocess
 import time
-# import signal
+import imageio
 
 import imgviz
 from qtpy import QtCore
@@ -1744,7 +1744,8 @@ class MainWindow(QtWidgets.QMainWindow):
             "*.{}".format(fmt.data().decode())
             for fmt in QtGui.QImageReader.supportedImageFormats()
         ]
-        formats.append("*.dcm") 
+        formats += ["*.dcm", "*.mp4", "*.avi"]
+        
         filters = self.tr("Image & Label files (%s)") % " ".join(
             formats + ["*%s" % LabelFile.suffix]
         )
@@ -1757,8 +1758,30 @@ class MainWindow(QtWidgets.QMainWindow):
         if QT5:
             filename, _ = filename
         filename = str(filename)
-        if filename:
-            self.loadFile(filename)
+        if filename and osp.splitext(filename)[1] == '.mp4': # videos
+            self.convertVideoToImages(filename)
+        elif filename:
+            self.loadFile(filename) # images
+
+
+    def convertVideoToImages(self, video_file):
+        out_dir = osp.splitext(video_file)[0]
+
+        if not osp.exists(out_dir):
+            os.mkdir(out_dir)
+        else:
+            print('Existed')
+
+        rate = None
+        reader = imageio.get_reader(video_file)
+        meta_data = reader.get_meta_data()
+
+        for i, img in enumerate(reader):
+            if rate is None or i % int(round(meta_data['fps'] / meta_data['nframes'])) == 0:
+                imageio.imsave(osp.join(out_dir, '%08d.jpg' % i), img)
+                print(osp.join(out_dir, '%08d.jpg' % i))
+
+        self.importDirImages(out_dir)
 
 
     def changeOutputDirDialog(self, _value=False):
@@ -2109,7 +2132,6 @@ class MainWindow(QtWidgets.QMainWindow):
             
         if self.preload_process.is_alive():
             self.preload_process.terminate()
-        #     os.kill(self.preload_pid, signal.SIGTERM)
 
 
 def dicom_to_jpeg(images):
